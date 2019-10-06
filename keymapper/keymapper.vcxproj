@@ -151,6 +151,7 @@
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="main.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

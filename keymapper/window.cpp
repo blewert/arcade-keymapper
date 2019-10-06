@@ -40,9 +40,42 @@ void keymapper::Window::RenderSplashScreen(const char* path) const
 	//Present it 
 	SDL_RenderPresent(this->renderer);
 
-	//Free the surface
+	//Free the surface, destroy the texture
 	SDL_FreeSurface(image);
+	SDL_DestroyTexture(texture);
 }
+
+DWORD __stdcall keymapper::Window::JoypadThreadCallback(void* param)
+{
+	//Cast to an instance of Window*
+	keymapper::Window* instance = (keymapper::Window*)param;
+
+	while (!instance->joypadThreadExited)
+	{
+
+	}
+
+	std::cout << "exiting joypad detection thread" << std::endl;
+
+	return 0;
+}
+
+void keymapper::Window::Close(void)
+{
+	//Set exited to true
+	this->joypadThreadExited = true;
+
+	//Close the window and renderer
+	SDL_DestroyRenderer(this->renderer);
+	SDL_DestroyWindow(this->window);
+}
+
+void keymapper::Window::StartJoypadDetection(void)
+{
+	//Create the thread
+	this->joypadThreadHandle = CreateThread(NULL, 0, this->JoypadThreadCallback, (void*)this, 0, &this->joypadThreadID);
+}
+
 
 void keymapper::Window::CreateRenderer(void)
 {
