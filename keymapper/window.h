@@ -1,4 +1,5 @@
 #pragma once
+
 #include <windows.h>
 #include <iostream>
 #include "SDL.h"
@@ -6,6 +7,8 @@
 
 namespace keymapper
 {
+	class Mapper;
+
 	class Window
 	{
 
@@ -20,6 +23,8 @@ namespace keymapper
 		void RenderSplashScreen(const char* path) const;
 		void StartJoypadDetection(void);
 		void Close(void);
+		void SetMapperInstance(Mapper* mapper);
+		Mapper* GetMapperInstance(void) const;
 
 		bool joypadThreadExited = false;
 
@@ -30,6 +35,8 @@ namespace keymapper
 		SDL_Renderer* renderer = NULL;
 		HANDLE joypadThreadHandle = NULL;
 		DWORD joypadThreadID = 0;
+
+		Mapper* mapperInstance = NULL;
 
 		unsigned int window_width = DEFAULT_WINDOW_WIDTH;
 		unsigned int window_height = DEFAULT_WINDOW_HEIGHT;

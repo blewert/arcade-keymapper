@@ -1,4 +1,4 @@
-#include "window.h"
+#include "mapper.h"
 
 keymapper::Window::Window(void)
 {
@@ -7,6 +7,19 @@ keymapper::Window::Window(void)
 	
 	//Create the renderer
 	this->CreateRenderer();
+}
+
+void keymapper::Window::SetMapperInstance(keymapper::Mapper* mapper)
+{
+	//Just set the variable directly, this is a pointer and mapper
+	//should be on the heap
+	this->mapperInstance = mapper;
+}
+
+keymapper::Mapper* keymapper::Window::GetMapperInstance(void) const
+{
+	//Just return the mapper instance
+	return this->mapperInstance;
 }
 
 keymapper::Window::Window(unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT) 
@@ -50,9 +63,13 @@ DWORD __stdcall keymapper::Window::JoypadThreadCallback(void* param)
 	//Cast to an instance of Window*
 	keymapper::Window* instance = (keymapper::Window*)param;
 
+	//Get the instance of the mapper
+	keymapper::Mapper* mapper = instance->GetMapperInstance();
+
 	while (!instance->joypadThreadExited)
 	{
-
+		//Call onThreadIteration
+		mapper->OnThreadIteration(instance);
 	}
 
 	std::cout << "exiting joypad detection thread" << std::endl;
