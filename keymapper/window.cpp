@@ -22,6 +22,17 @@ keymapper::Mapper* keymapper::Window::GetMapperInstance(void) const
 	return this->mapperInstance;
 }
 
+void keymapper::Window::RenderWarning(float diff) const
+{
+	//Get the window flags
+	auto windowFlags = SDL_GetWindowFlags(this->window);
+
+	//Is the window hidden? Show it!
+	if (windowFlags & SDL_WINDOW_HIDDEN)
+		SDL_ShowWindow(this->window);
+
+}
+
 keymapper::Window::Window(unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT) 
 	: window_height(height), window_width(width)
 {

@@ -21,6 +21,7 @@ namespace keymapper
 		Window(unsigned int width, unsigned int height);
 
 		void RenderSplashScreen(const char* path) const;
+		void RenderWarning(float diff) const;
 		void StartJoypadDetection(void);
 		void Close(void);
 		void SetMapperInstance(Mapper* mapper);
