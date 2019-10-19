@@ -2,6 +2,9 @@
 
 keymapper::Window::Window(void)
 {
+	//Call TTF init
+	TTF_Init();
+
 	//Create the window
 	this->window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, NULL);
 	
@@ -22,6 +25,56 @@ keymapper::Mapper* keymapper::Window::GetMapperInstance(void) const
 	return this->mapperInstance;
 }
 
+void keymapper::Window::LoadMainFont(const char* path)
+{
+	//Open the font
+	this->font = TTF_OpenFont(path, 24);
+}
+
+
+void keymapper::Window::LoadWarningImage(const char* path)
+{
+	//Load the surface
+	SDL_Surface* surf = IMG_Load(path);
+
+	//Make the warning image
+	this->warningImage = SDL_CreateTextureFromSurface(this->renderer, surf);
+
+	//And free the surface
+	SDL_FreeSurface(surf);
+}
+
+void keymapper::Window::RenderText(const std::string& text, int x, int y, int align) const
+{
+	//Size the text's bounding box
+	int w, h;
+	TTF_SizeText(this->font, text.c_str(), &w, &h);
+
+	//Build the rect for rendercopy 
+	SDL_Rect rect = { x, y, w, h };
+
+	//Centre alignment? Position accordingly
+	if (align == ALIGN_CENTRE)
+		rect = { x - w/2, y - h/2, w, h };
+
+	//Build the surface, make a texture from it
+	SDL_Surface* surf = TTF_RenderText_Blended(this->font, text.c_str(), { 255, 255, 255, 255 });
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surf);
+
+	//Copy it into the window
+	SDL_RenderCopy(this->renderer, texture, NULL, &rect);
+
+	//Clean up
+	SDL_FreeSurface(surf);
+	SDL_DestroyTexture(texture);
+}
+
+void keymapper::Window::Hide(void)
+{
+	//Hide the window
+	SDL_HideWindow(this->window);
+}
+
 void keymapper::Window::RenderWarning(float diff) const
 {
 	//Get the window flags
@@ -31,6 +84,24 @@ void keymapper::Window::RenderWarning(float diff) const
 	if (windowFlags & SDL_WINDOW_HIDDEN)
 		SDL_ShowWindow(this->window);
 
+	//Render the background
+	SDL_RenderCopy(this->renderer, this->warningImage, NULL, NULL);
+
+	//The string to render
+	std::string str = std::to_string((int)ceil(diff)) + " seconds";
+
+	//Where to render it
+	int x = DEFAULT_WINDOW_WIDTH  / 2, 
+		y = DEFAULT_WINDOW_HEIGHT / 2;
+
+	//Refreshing page text
+	this->RenderText("Refreshing page in:", x, y, ALIGN_CENTRE);
+
+	//Render the countdown text
+	this->RenderText(str, x, y + 50, ALIGN_CENTRE);	
+
+	//Present it!
+	SDL_RenderPresent(renderer);
 }
 
 keymapper::Window::Window(unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT) 

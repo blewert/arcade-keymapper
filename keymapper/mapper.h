@@ -3,6 +3,7 @@
 #include <iostream>
 #include "SDL.h"
 #include "window.h"
+#include <string>
 
 namespace keymapper
 {
@@ -12,6 +13,11 @@ namespace keymapper
 		void __fastcall OnThreadIteration(Window* window);
 		void SetTimeoutSeconds(int seconds);
 		void SetWarningSeconds(int seconds);
+
+		void StartChrome(void) const;
+		void RefreshChrome(void) const;
+		void RestartChrome(void) const;
+		void CloseChrome(void) const;
 
 	private:
 		int lastKeyPressed = 0;
