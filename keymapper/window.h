@@ -28,7 +28,7 @@ namespace keymapper
 		Window(unsigned int width, unsigned int height);
 
 		void Hide(void);
-		void RenderText(const std::string& text, int x, int y, int align = ALIGN_LEFT) const;
+		void RenderText(const std::string& text, int x, int y, int align = ALIGN_LEFT, int color = 0xffffff) const;
 		void LoadWarningImage(const char* path);
 		void LoadMainFont(const char* path);
 		void RenderSplashScreen(const char* path) const;
@@ -55,6 +55,7 @@ namespace keymapper
 		unsigned int window_height = DEFAULT_WINDOW_HEIGHT;
 
 		void CreateRenderer(void);
+		SDL_Color RGB24ToSDLColor(const int color) const;
 
 		static DWORD __stdcall JoypadThreadCallback(void* param);
 	};

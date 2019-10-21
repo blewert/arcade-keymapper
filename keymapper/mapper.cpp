@@ -12,7 +12,7 @@ void keymapper::Mapper::SetWarningSeconds(int seconds)
 	this->warningTicks = seconds * 1000;
 }
 
-void keymapper::Mapper::CloseChrome(void) const
+void keymapper::Mapper::CloseProcess(const wchar_t* name) const
 {
 	// god bless stackoverflow
 	// <https://stackoverflow.com/questions/865152/how-can-i-get-a-process-handle-by-its-name-in-c>
@@ -34,7 +34,7 @@ void keymapper::Mapper::CloseChrome(void) const
 			//wcsicmp, yikes what a name: wide compare strings with case insensitivity
 			//..
 
-			if (_wcsicmp(entry.szExeFile, L"chrome.exe") == 0)
+			if (_wcsicmp(entry.szExeFile, name) == 0)
 			{
 				//Open that process
 				HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
@@ -51,18 +51,41 @@ void keymapper::Mapper::CloseChrome(void) const
 	CloseHandle(snapshot);
 }
 
-void keymapper::Mapper::StartChrome(void) const
+void keymapper::Mapper::StartProcess(const std::string& path) const
 {
-	//Do some mad stuff
+	//Startup info
+	STARTUPINFOA info = { sizeof(info) };
+	
+	//Process info for startup
+	PROCESS_INFORMATION processInfo;
+
+	LPSTR str = const_cast<LPSTR>(path.c_str());
+
+	std::cout << str << std::endl;
+
+	if (CreateProcessA(NULL, str, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
+	{
+		//It's created it so detach from parent process
+		//..
+
+		WaitForSingleObject(processInfo.hProcess, INFINITE);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(processInfo.hThread);
+	}
+	else
+	{
+		DWORD error = GetLastError();
+		std::cout << std::endl << error << std::endl;
+	}
 }
 
 void keymapper::Mapper::RestartChrome(void) const
 {
 	//Close chrome
-	this->CloseChrome();
+	//this->CloseProcess(L"chrome.exe");
 
 	//Start chrome
-	this->StartChrome();
+	//this->StartProcess(chromePath + " " + chromeFlags);
 }
 
 void keymapper::Mapper::RefreshChrome(void) const
@@ -142,7 +165,7 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 			//Set waiting for user to true
 			this->waitingForUserStart = true;
 		}
-	}
+	}	
 
 	while (SDL_PollEvent(&event))
 	{
@@ -159,6 +182,11 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 			//Is waiting for user key press true? Set to false
 			if (this->waitingForUserStart)
 				this->waitingForUserStart = false;
+
+			else 
+			{
+				window->Hide();
+			}
 		}
 	}
 }

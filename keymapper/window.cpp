@@ -44,7 +44,24 @@ void keymapper::Window::LoadWarningImage(const char* path)
 	SDL_FreeSurface(surf);
 }
 
-void keymapper::Window::RenderText(const std::string& text, int x, int y, int align) const
+SDL_Color keymapper::Window::RGB24ToSDLColor(const int color) const
+{
+	//Initialise the struct with nothing
+	SDL_Color colorStruct;
+
+	//Bitshift to get channels, this is a rgb24 color
+	colorStruct.r = (color >> 16) & 0xff;
+	colorStruct.g = (color >> 8) & 0xff;
+	colorStruct.b = (color & 0xff);
+
+	//Set alpha to max
+	colorStruct.a = 0xff;
+
+	//Return a copy
+	return colorStruct;
+}
+
+void keymapper::Window::RenderText(const std::string& text, int x, int y, int align, int color) const
 {
 	//Size the text's bounding box
 	int w, h;
@@ -57,8 +74,11 @@ void keymapper::Window::RenderText(const std::string& text, int x, int y, int al
 	if (align == ALIGN_CENTRE)
 		rect = { x - w/2, y - h/2, w, h };
 
+	//Get the color
+	SDL_Color renderColor = this->RGB24ToSDLColor(color);
+
 	//Build the surface, make a texture from it
-	SDL_Surface* surf = TTF_RenderText_Blended(this->font, text.c_str(), { 255, 255, 255, 255 });
+	SDL_Surface* surf = TTF_RenderText_Blended(this->font, text.c_str(), renderColor);
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(this->renderer, surf);
 
 	//Copy it into the window
@@ -87,18 +107,25 @@ void keymapper::Window::RenderWarning(float diff) const
 	//Render the background
 	SDL_RenderCopy(this->renderer, this->warningImage, NULL, NULL);
 
+	//Build the string
+	char buildString[16];
+	sprintf_s(buildString, "%.1f", diff);
+
 	//The string to render
-	std::string str = std::to_string((int)ceil(diff)) + " seconds";
+	std::string str = std::string(buildString) + " seconds";
 
 	//Where to render it
 	int x = DEFAULT_WINDOW_WIDTH  / 2, 
 		y = DEFAULT_WINDOW_HEIGHT / 2;
 
 	//Refreshing page text
-	this->RenderText("Refreshing page in:", x, y, ALIGN_CENTRE);
+	this->RenderText("Refreshing page in", x, y - 50, ALIGN_CENTRE);
 
 	//Render the countdown text
-	this->RenderText(str, x, y + 50, ALIGN_CENTRE);	
+	this->RenderText(str, x, y, ALIGN_CENTRE, 0xff0000);	
+
+	//Render actions text
+	this->RenderText("Press any button to continue", x, y + 50, ALIGN_CENTRE);
 
 	//Present it!
 	SDL_RenderPresent(renderer);
