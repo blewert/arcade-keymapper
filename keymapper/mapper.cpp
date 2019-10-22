@@ -129,6 +129,29 @@ void keymapper::Mapper::RefreshChrome(void) const
 
 }
 
+void keymapper::Mapper::TryEnumeration(void)
+{
+	//Check if any joypad input is pressed
+	//..
+
+	//Event to save into
+	SDL_Event event;
+
+	while (SDL_PollEvent(&event))
+	{
+		//While there are events
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			//Virtual indexing -- this will indicate which
+			//pad is set as the virtual index 0. Set it, set 
+			//waiting for virtual enum to false.
+
+			this->joypadVirtualIndexP1 = event.jbutton.which;
+			this->waitingForVirtualEnumeration = false;
+		}
+	}
+}
+
 void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 {
 	//Get the event
@@ -188,5 +211,22 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 				window->Hide();
 			}
 		}
+
+		if (event.type == SDL_JOYBUTTONDOWN)
+			this->MapJoyInputDown(event);
+
+		else if (event.type == SDL_JOYBUTTONUP)
+			this->MapJoyInputUp(event);
 	}
+}
+
+void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
+{
+	//joy button is down
+	//event.jbutton.
+}
+
+void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
+{
+	//joy button is up
 }
