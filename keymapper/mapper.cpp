@@ -7,6 +7,7 @@ keymapper::Mapper::Mapper(void)
 
 void keymapper::Mapper::SetTimeoutSeconds(int seconds)
 {
+	
 	//Just set ticks to the amount of seconds times by 1000 (because this is in ms and we're doing s -> ms)
 	this->timeoutTicks = seconds * 1000;
 }
@@ -164,6 +165,10 @@ void keymapper::Mapper::EnumerateJoypads(Window* window)
 
 				//Get which joypad was pressed
 				int joypadID = event.jbutton.which;
+
+				//This joypad is already mapped.. so they can't map it again
+				if (enumerationMap.find(joypadID) != enumerationMap.end())
+					continue;
 				
 				//Map this joypad id to the "player id"
 				enumerationMap[joypadID] = joypadCount++;
@@ -260,7 +265,7 @@ void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
 	//..
 
 	//Firstly, what joypad id is this?
-	int mappedJoypadIndex = event.jbutton.which;
+	int mappedJoypadIndex = this->enumerationMap[event.jbutton.which];
 
 	//Get the button
 	uint8_t button = event.jbutton.button;
@@ -269,6 +274,7 @@ void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
 	char mappedKey = (*this->joypadMappings[mappedJoypadIndex])[button];
 
 	//Press that key
+	printf("joypad id %d, mapped to %d | button %d, key press %c\n", event.jbutton.which, mappedJoypadIndex, button, mappedKey);
 }
 
 void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
@@ -278,6 +284,9 @@ void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
 
 void keymapper::Mapper::AddJoyButtonMap(unsigned int joypadIndex, const char* file)
 {
+	//Open the joystick at this index
+	SDL_JoystickOpen(joypadIndex);
+
 	//Assign a new key in the outer map
 	joypadMappings[joypadIndex] = new std::map<int, char>();
 	
