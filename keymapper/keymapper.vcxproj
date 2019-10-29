@@ -148,12 +148,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="keyutil.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mapper.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="keyutil.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="mapper.h" />
     <ClInclude Include="window.h" />

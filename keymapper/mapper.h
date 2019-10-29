@@ -4,6 +4,7 @@
 #include <iostream>
 #include "SDL.h"
 #include "window.h"
+#include "keyutil.h"
 #include <string>
 
 #include <fstream>

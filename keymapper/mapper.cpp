@@ -110,26 +110,10 @@ void keymapper::Mapper::RefreshChrome(void) const
 
 		SetForegroundWindow(hwnd);
 
-		INPUT ip;
-		ip.type = INPUT_KEYBOARD;
-		ip.ki.wScan = 0;
-		ip.ki.time = 0;
-		ip.ki.dwExtraInfo = 0;
-		ip.ki.dwFlags = 0;
-
-		ip.ki.wVk = VK_CONTROL;
-		SendInput(1, &ip, sizeof(INPUT));
-
-		ip.ki.wVk = VK_F5;
-		SendInput(1, &ip, sizeof(INPUT));
-
-		ip.ki.dwFlags = KEYEVENTF_KEYUP;
-		ip.ki.wVk = VK_CONTROL;
-		SendInput(1, &ip, sizeof(INPUT));
-
-		ip.ki.wVk = VK_F5;
-		SendInput(1, &ip, sizeof(INPUT));
-
+		KeyUtil::SendKeyDown(VK_CONTROL);
+		KeyUtil::SendKeyDown(VK_F5);
+		KeyUtil::SendKeyUp(VK_CONTROL);
+		KeyUtil::SendKeyUp(VK_F5);
 	}
 
 }
@@ -274,12 +258,27 @@ void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
 	char mappedKey = (*this->joypadMappings[mappedJoypadIndex])[button];
 
 	//Press that key
-	printf("joypad id %d, mapped to %d | button %d, key press %c\n", event.jbutton.which, mappedJoypadIndex, button, mappedKey);
+	KeyUtil::SendKeyDown(mappedKey);
+
+	//printf("joypad id %d, mapped to %d | button %d, key press %c\n", event.jbutton.which, mappedJoypadIndex, button, mappedKey);
 }
 
 void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
 {
-	//joy button is up
+	//joy button is up, find which button
+	//..
+
+	//Firstly, what joypad id is this?
+	int mappedJoypadIndex = this->enumerationMap[event.jbutton.which];
+
+	//Get the button
+	uint8_t button = event.jbutton.button;
+
+	//Find the mapping
+	char mappedKey = (*this->joypadMappings[mappedJoypadIndex])[button];
+
+	//Press that key
+	KeyUtil::SendKeyUp(mappedKey);
 }
 
 void keymapper::Mapper::AddJoyButtonMap(unsigned int joypadIndex, const char* file)
