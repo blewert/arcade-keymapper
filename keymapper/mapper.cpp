@@ -1,5 +1,10 @@
 #include "mapper.h"
 
+keymapper::Mapper::Mapper(void)
+{
+
+}
+
 void keymapper::Mapper::SetTimeoutSeconds(int seconds)
 {
 	//Just set ticks to the amount of seconds times by 1000 (because this is in ms and we're doing s -> ms)
@@ -124,12 +129,11 @@ void keymapper::Mapper::RefreshChrome(void) const
 		ip.ki.wVk = VK_F5;
 		SendInput(1, &ip, sizeof(INPUT));
 
-		printf("woop");
 	}
 
 }
 
-void keymapper::Mapper::TryEnumeration(void)
+void keymapper::Mapper::EnumerateJoypads(Window* window)
 {
 	//Check if any joypad input is pressed
 	//..
@@ -137,19 +141,50 @@ void keymapper::Mapper::TryEnumeration(void)
 	//Event to save into
 	SDL_Event event;
 
-	while (SDL_PollEvent(&event))
-	{
-		//While there are events
-		if (event.type == SDL_JOYBUTTONDOWN)
-		{
-			//Virtual indexing -- this will indicate which
-			//pad is set as the virtual index 0. Set it, set 
-			//waiting for virtual enum to false.
+	//Get the number of joypads open
+	int joypadTotalCount = SDL_NumJoysticks();
+	int joypadCount = 0;
 
-			this->joypadVirtualIndexP1 = event.jbutton.which;
-			this->waitingForVirtualEnumeration = false;
+	std::cout << joypadTotalCount << " joypads available" << std::endl;
+
+	//Render the splash screen, draw some initial text
+	window->RenderSplashScreen("assets/img/start-menu.png");
+	window->RenderText("Player 1, press start!", window->DEFAULT_WINDOW_WIDTH / 2, 400, window->ALIGN_CENTRE);
+	window->RenderPresent();
+
+	while (joypadCount < joypadTotalCount)
+	{
+		while (SDL_PollEvent(&event))
+		{
+			//While there are events
+			if (event.type == SDL_JOYBUTTONDOWN)
+			{
+				//Virtual indexing -- this will indicate which
+				//pad is set.
+
+				//Get which joypad was pressed
+				int joypadID = event.jbutton.which;
+				
+				//Map this joypad id to the "player id"
+				enumerationMap[joypadID] = joypadCount++;
+
+				//Make the text
+				std::string text = "Player " + std::to_string(joypadCount + 1) + ", press start!";
+
+				//Render for next time
+				window->RenderSplashScreen("assets/img/start-menu.png");
+				window->RenderText(text, window->DEFAULT_WINDOW_WIDTH / 2, 400, window->ALIGN_CENTRE);
+				window->RenderPresent();
+			}
 		}
 	}
+
+	//Clear window
+	window->RenderClear();
+	window->RenderPresent();
+
+	//Set flag to false
+	this->waitingForVirtualEnumeration = false;
 }
 
 void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
@@ -206,10 +241,9 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 			if (this->waitingForUserStart)
 				this->waitingForUserStart = false;
 
+			//Hide the window otherwise
 			else 
-			{
 				window->Hide();
-			}
 		}
 
 		if (event.type == SDL_JOYBUTTONDOWN)
@@ -222,11 +256,67 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 
 void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
 {
-	//joy button is down
-	//event.jbutton.
+	//joy button is down, find which button
+	//..
+
+	//Firstly, what joypad id is this?
+	int mappedJoypadIndex = event.jbutton.which;
+
+	//Get the button
+	uint8_t button = event.jbutton.button;
+
+	//Find the mapping
+	char mappedKey = (*this->joypadMappings[mappedJoypadIndex])[button];
+
+	//Press that key
 }
 
 void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
 {
 	//joy button is up
 }
+
+void keymapper::Mapper::AddJoyButtonMap(unsigned int joypadIndex, const char* file)
+{
+	//Assign a new key in the outer map
+	joypadMappings[joypadIndex] = new std::map<int, char>();
+	
+	//Point to the map
+	std::map<int, char>* map = joypadMappings[joypadIndex];
+
+	//Load in json file, set up mappings for joypad mappings
+	std::ifstream stream(file);
+	
+	if (stream.fail())
+	{
+		//Send error message
+		std::cout << "error: couldn't open file " << file << std::endl;
+
+		//Close the file and return
+		stream.close();
+		return;
+	}
+
+	//Parse the JSON
+	json j = json::parse(stream);
+
+	//Find the exit/start buttons
+	char exitButton  = j["exit"].get<char>();
+	char startButton = j["start"].get<char>();
+
+	//Get the buttons
+	std::vector<char> buttons = j["buttons"].get<std::vector<char>>();
+
+	//Now add everything to the map! We need to map exit/start first
+	(*map)[JOYPAD_BUTTON_IDX_EXIT]  = exitButton;
+	(*map)[JOYPAD_BUTTON_IDX_START] = startButton;
+
+	//Then shove the buttons into the map
+	for (int i = 0; i < buttons.size(); i++)
+		(*map)[JOYPAD_BUTTON_IDX_A + i] = buttons[i];
+	
+	//Close the stream
+	stream.close();
+}
+
+

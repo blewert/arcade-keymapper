@@ -28,6 +28,8 @@ namespace keymapper
 		Window(unsigned int width, unsigned int height);
 
 		void Hide(void);
+		void RenderPresent(void) const;
+		void RenderClear(void) const;
 		void RenderText(const std::string& text, int x, int y, int align = ALIGN_LEFT, int color = 0xffffff) const;
 		void LoadWarningImage(const char* path);
 		void LoadMainFont(const char* path);
@@ -50,7 +52,7 @@ namespace keymapper
 		SDL_Texture* warningImage = NULL;
 		TTF_Font* font = NULL;
 		Mapper* mapperInstance = NULL;
-
+	
 		unsigned int window_width = DEFAULT_WINDOW_WIDTH;
 		unsigned int window_height = DEFAULT_WINDOW_HEIGHT;
 

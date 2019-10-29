@@ -1,15 +1,44 @@
 #pragma once
 
+#include "json.hpp"
 #include <iostream>
 #include "SDL.h"
 #include "window.h"
 #include <string>
 
+#include <fstream>
+#include <vector>
+#include <map>
+
+#define JOYPAD_DEVICE_NUM_PADS 2
+
 namespace keymapper
 {
+	using json = nlohmann::json;
+
+	enum E_JOYPAD_DEVICE_IDX
+	{
+		JOYPAD_DEVICE_IDX_P1,
+		JOYPAD_DEVICE_IDX_P2,
+	};
+
+	enum E_JOYPAD_BUTTON_IDX
+	{
+		JOYPAD_BUTTON_IDX_EXIT,
+		JOYPAD_BUTTON_IDX_START,
+		JOYPAD_BUTTON_IDX_A,
+		JOYPAD_BUTTON_IDX_B,
+		JOYPAD_BUTTON_IDX_C,
+		JOYPAD_BUTTON_IDX_D,
+		JOYPAD_BUTTON_IDX_E,
+		JOYPAD_BUTTON_IDX_F
+	};
+
 	class Mapper
 	{
 	public:
+		Mapper(void);
+
 		void __fastcall OnThreadIteration(Window* window);
 		void SetTimeoutSeconds(int seconds);
 		void SetWarningSeconds(int seconds);
@@ -18,21 +47,24 @@ namespace keymapper
 		void CloseProcess(const wchar_t* name) const;
 		void RefreshChrome(void) const;
 		void RestartChrome(void) const;
-		void TryEnumeration(void);
+		void EnumerateJoypads(Window* window);
 
 		void MapJoyInputDown(SDL_Event event);
 		void MapJoyInputUp(SDL_Event event);
+		void AddJoyButtonMap(unsigned int joypadIndex, const char* file);
 
 		bool waitingForVirtualEnumeration = true;
 
 	private:
+
+		std::map<unsigned int, unsigned int> enumerationMap;
+		std::map<unsigned int, std::map<int, char>*> joypadMappings;
+
 		int lastKeyPressed = 0;
 		int warningTicks = 1000 * 5;
 		int timeoutTicks = 1000 * 30;
 
 		bool waitingForUserStart = true;
-
-		int joypadVirtualIndexP1 = 0;
 
 		std::string chromePath  = "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"";
 		std::string chromeFlags = "--chrome --kiosk http://games.researcharcade.com/ --incognito";

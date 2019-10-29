@@ -2,11 +2,8 @@
 
 keymapper::Window::Window(void)
 {
-	//Call TTF init
-	TTF_Init();
-
 	//Create the window
-	this->window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, NULL);
+	this->window = SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 	
 	//Create the renderer
 	this->CreateRenderer();
@@ -93,6 +90,16 @@ void keymapper::Window::Hide(void)
 {
 	//Hide the window
 	SDL_HideWindow(this->window);
+}
+
+void keymapper::Window::RenderClear(void) const
+{
+	SDL_RenderClear(this->renderer);
+}
+
+void keymapper::Window::RenderPresent(void) const
+{
+	SDL_RenderPresent(this->renderer);
 }
 
 void keymapper::Window::RenderWarning(float diff) const
@@ -210,12 +217,6 @@ void keymapper::Window::CreateRenderer(void)
 
 	//Create a new renderer
 	this->renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-	//Set up renderer hints
-	SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
 	//Clear once
 	SDL_RenderClear(this->renderer);
