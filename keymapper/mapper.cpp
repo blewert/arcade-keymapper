@@ -235,12 +235,28 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 				window->Hide();
 		}
 
+		//Joy button down?
 		if (event.type == SDL_JOYBUTTONDOWN)
 			this->MapJoyInputDown(event);
 
+		//Joy button up?
 		else if (event.type == SDL_JOYBUTTONUP)
 			this->MapJoyInputUp(event);
+
+		//Joy axis motion?
+		if (event.type == SDL_JOYAXISMOTION)
+			this->MapJoyAxisMotion(event);
 	}
+}
+
+
+void keymapper::Mapper::MapJoyAxisMotion(SDL_Event event)
+{
+	//Firstly, what mapped joypad id is this?
+	int mappedJoypadIndex = this->enumerationMap[event.jbutton.which];
+
+	//Use this as an index to the axes mapper
+	axisMap[mappedJoypadIndex]->Map(event);
 }
 
 void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
@@ -280,6 +296,52 @@ void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
 	//Press that key
 	KeyUtil::SendKeyUp(mappedKey);
 }
+
+void keymapper::Mapper::AddJoyAxisMap(unsigned int joypadIndex, const char* file)
+{
+	//Open the joystick at this index (if it hasn't been already)
+	SDL_JoystickOpen(joypadIndex);
+
+	//Assign a new key, set to pointer so we don't have to type it in a lot (im so lazy)
+	AxisMapper* map = axisMap[joypadIndex] = new AxisMapper();
+
+	//Open the file, not the best way because its been opened already, but whatever
+	std::ifstream stream(file);
+
+	if (stream.fail())
+	{
+		//Send error message
+		std::cout << "error: couldn't open file " << file << std::endl;
+
+		//Close the file and return
+		stream.close();
+		return;
+	}
+
+	//Parse the JSON
+	json j = json::parse(stream);
+
+	//Get the axes
+	std::vector<json> axes = j["axes"];
+
+	for (int i = 0; i < axes.size(); i++)
+	{
+		//Get the axis
+		const json& axis = axes[i];
+
+		//Run through each axis.. get the pos/neg/thresh values
+		char positive = axis["positive"].get<char>();
+		char negative = axis["negative"].get<char>();
+		float threshold = axis["threshold"].get<float>();
+
+		//Add to the axis map
+		map->AddMap(positive, negative, threshold);
+	}
+
+	//Close the stream
+	stream.close();
+}
+
 
 void keymapper::Mapper::AddJoyButtonMap(unsigned int joypadIndex, const char* file)
 {

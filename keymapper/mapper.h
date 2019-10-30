@@ -1,17 +1,19 @@
 #pragma once
 
-#include "json.hpp"
-#include <iostream>
-#include "SDL.h"
-#include "window.h"
-#include "keyutil.h"
-#include <string>
 
+#include <iostream>
 #include <fstream>
 #include <vector>
 #include <map>
+#include <string>
 
-#define JOYPAD_DEVICE_NUM_PADS 2
+#include "json.hpp"
+#include "SDL.h"
+
+#include "window.h"
+#include "keyutil.h"
+#include "axismapper.h"
+
 
 namespace keymapper
 {
@@ -52,12 +54,16 @@ namespace keymapper
 
 		void MapJoyInputDown(SDL_Event event);
 		void MapJoyInputUp(SDL_Event event);
+		void MapJoyAxisMotion(SDL_Event event);
+
+		void AddJoyAxisMap(unsigned int joypadIndex, const char* file);
 		void AddJoyButtonMap(unsigned int joypadIndex, const char* file);
 
 		bool waitingForVirtualEnumeration = true;
 
 	private:
 
+		std::map<unsigned int, AxisMapper*> axisMap;
 		std::map<unsigned int, unsigned int> enumerationMap;
 		std::map<unsigned int, std::map<int, char>*> joypadMappings;
 

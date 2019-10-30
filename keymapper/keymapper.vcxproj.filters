@@ -27,6 +27,9 @@
     <ClCompile Include="keyutil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AxisMapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="keyutil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="axismapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

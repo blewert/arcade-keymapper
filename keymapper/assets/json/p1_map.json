@@ -8,5 +8,18 @@
     86,
     66,
     78
+  ],
+  "axes": [
+	{
+		"positive" : 39,
+		"negative" : 37,
+		"threshold": 0.5
+	},
+	
+	{
+		"positive" : 38,
+		"negative" : 40,
+		"threshold": 0.5
+	}
   ]
 }
