@@ -3,7 +3,12 @@
 void AxisMapper::AddMap(char vkPositive, char vkNegative, float axisThreshold)
 {
 	//Build the struct
-	AxisMapInfo infoStruct = { vkPositive, vkNegative, axisThreshold };
+	AxisMapInfo infoStruct;
+	
+	//Set variables
+	infoStruct.vkPositive = vkPositive;
+	infoStruct.vkNegative = vkNegative;
+	infoStruct.axisThreshold = axisThreshold;
 
 	//Add into the map at this id
 	this->axes.push_back(infoStruct);
@@ -22,7 +27,7 @@ void AxisMapper::Map(SDL_Event& event)
 	AxisMapInfo& axisInfo = axes[axisID];
 
 	//Use the axes data to get the character to press
-	char vkCode = axisInfo.step(event.jaxis.value);
+	char vkCode = axisInfo.stepKey(event.jaxis.value);
 
 	//Is this key already being held down? If so.. skip, we
 	//want to hold when the axis value is negated or its
@@ -36,7 +41,10 @@ void AxisMapper::Map(SDL_Event& event)
 
 	//If vkCode is 0, the axes has been reset to the centre.. we need to release last key
 	if (vkCode)
+	{
+		//printf("[KEYDN] %2c, %3d, %3d, %3d%\n", vkCode, vkCode, 0, event.jaxis.value);
 		KeyUtil::SendKeyDown(vkCode);
+	}
 
 	//Set the last key down to whatever
 	axisInfo.lastKeyDown = vkCode;
