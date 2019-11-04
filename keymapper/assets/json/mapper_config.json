@@ -1,0 +1,6 @@
+{
+  "warningSeconds": 5,
+  "timeoutSeconds": 30,
+  "chromePath": "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  "chromeFlags": "--chrome --kiosk http://games.researcharcade.com/ --incognito"
+}
