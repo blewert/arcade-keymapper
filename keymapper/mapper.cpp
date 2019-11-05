@@ -297,6 +297,34 @@ void keymapper::Mapper::MapJoyInputUp(SDL_Event event)
 	KeyUtil::SendKeyUp(mappedKey);
 }
 
+void keymapper::Mapper::LoadConfigFile(const std::string& path)
+{
+	//Open the file, not the best way because its been opened already, but whatever
+	std::ifstream stream(path);
+
+	if (stream.fail())
+	{
+		//Send error message
+		std::cout << "error: couldn't open file " << path << std::endl;
+
+		//Close the file and return
+		stream.close();
+		return;
+	}
+
+	//Parse the JSON
+	json j = json::parse(stream);
+
+	//Parse the variables
+	this->warningTicks = 1000 * j["warningSeconds"].get<int>();
+	this->timeoutTicks = 1000 * j["timeoutSeconds"].get<int>();
+	this->chromePath = j["chromePath"].get<std::string>();
+	this->chromeFlags = j["chromeFlags"].get<std::string>();
+
+	//Close the stream
+	stream.close();
+}
+
 void keymapper::Mapper::AddJoyAxisMap(unsigned int joypadIndex, const char* file)
 {
 	//Open the joystick at this index (if it hasn't been already)
@@ -333,9 +361,10 @@ void keymapper::Mapper::AddJoyAxisMap(unsigned int joypadIndex, const char* file
 		char positive = axis["positive"].get<char>();
 		char negative = axis["negative"].get<char>();
 		float threshold = axis["threshold"].get<float>();
+		float scale = axis["scale"].get<float>();
 
 		//Add to the axis map
-		map->AddMap(positive, negative, threshold);
+		map->AddMap(positive, negative, threshold, scale);
 	}
 
 	//Close the stream

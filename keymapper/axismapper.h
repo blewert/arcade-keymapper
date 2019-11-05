@@ -10,7 +10,7 @@
 class AxisMapper
 {
 public:
-	void AddMap(char vkPositive, char vkNegative, float axisThreshold);
+	void AddMap(char vkPositive, char vkNegative, float axisThreshold, float scale);
 	void Map(SDL_Event& event);
 
 	typedef struct AxisMapInfo
@@ -18,6 +18,7 @@ public:
 		char lastKeyDown = '\0';
 		char vkPositive, vkNegative;
 		float axisThreshold;
+		float scale;
 
 		template <typename T> int sgn(T val)
 		{

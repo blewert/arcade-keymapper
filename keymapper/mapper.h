@@ -58,6 +58,7 @@ namespace keymapper
 
 		void AddJoyAxisMap(unsigned int joypadIndex, const char* file);
 		void AddJoyButtonMap(unsigned int joypadIndex, const char* file);
+		void LoadConfigFile(const std::string& path);
 
 		bool waitingForVirtualEnumeration = true;
 
@@ -73,7 +74,7 @@ namespace keymapper
 
 		bool waitingForUserStart = true;
 
-		std::string chromePath  = "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"";
-		std::string chromeFlags = "--chrome --kiosk http://games.researcharcade.com/ --incognito";
+		std::string chromePath  = "";
+		std::string chromeFlags = "";
 	};
 }

@@ -13,13 +13,15 @@
 	{
 		"positive" : 39,
 		"negative" : 37,
-		"threshold": 0.5
+		"threshold": 0.5,
+		"scale":  1
 	},
 	
 	{
 		"positive" : 38,
 		"negative" : 40,
-		"threshold": 0.5
+		"threshold": 0.5,
+		"scale" : 1
 	}
   ]
 }
