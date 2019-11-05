@@ -46,7 +46,7 @@ namespace keymapper
 		void SetTimeoutSeconds(int seconds);
 		void SetWarningSeconds(int seconds);
 
-		void StartProcess(const std::string& path) const;
+		void StartProcess(const std::string& path, const std::string& args) const;
 		void CloseProcess(const wchar_t* name) const;
 		void RefreshChrome(void) const;
 		void RestartChrome(void) const;

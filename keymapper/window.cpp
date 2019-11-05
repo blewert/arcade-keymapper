@@ -109,7 +109,10 @@ void keymapper::Window::RenderWarning(float diff) const
 
 	//Is the window hidden? Show it!
 	if (windowFlags & SDL_WINDOW_HIDDEN)
+	{
 		SDL_ShowWindow(this->window);
+		SDL_RaiseWindow(this->window);
+	}
 
 	//Render the background
 	SDL_RenderCopy(this->renderer, this->warningImage, NULL, NULL);

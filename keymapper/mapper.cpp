@@ -57,7 +57,7 @@ void keymapper::Mapper::CloseProcess(const wchar_t* name) const
 	CloseHandle(snapshot);
 }
 
-void keymapper::Mapper::StartProcess(const std::string& path) const
+void keymapper::Mapper::StartProcess(const std::string& path, const std::string& args) const
 {
 	//Startup info
 	STARTUPINFOA info = { sizeof(info) };
@@ -65,16 +65,15 @@ void keymapper::Mapper::StartProcess(const std::string& path) const
 	//Process info for startup
 	PROCESS_INFORMATION processInfo;
 
-	LPSTR str = const_cast<LPSTR>(path.c_str());
+	LPSTR lpPath = const_cast<LPSTR>(path.c_str());
+	LPSTR lpArgs = const_cast<LPSTR>(args.c_str());
 
-	std::cout << str << std::endl;
-
-	if (CreateProcessA(NULL, str, NULL, NULL, TRUE, 0, NULL, NULL, &info, &processInfo))
+	if (CreateProcessA(lpPath, lpArgs, NULL, NULL, TRUE, CREATE_NEW_PROCESS_GROUP, NULL, NULL, &info, &processInfo))
 	{
 		//It's created it so detach from parent process
 		//..
 
-		WaitForSingleObject(processInfo.hProcess, INFINITE);
+		//Close handle
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
 	}
@@ -88,10 +87,13 @@ void keymapper::Mapper::StartProcess(const std::string& path) const
 void keymapper::Mapper::RestartChrome(void) const
 {
 	//Close chrome
-	//this->CloseProcess(L"chrome.exe");
+	this->CloseProcess(L"chrome.exe");
+
+	//Sleep for a second
+	Sleep(1 * 1000);
 
 	//Start chrome
-	//this->StartProcess(chromePath + " " + chromeFlags);
+	this->StartProcess(this->chromePath, this->chromeFlags);
 }
 
 void keymapper::Mapper::RefreshChrome(void) const
@@ -221,7 +223,7 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 			window->Close();
 
 		//Key pressed? Update key time
-		if (event.type == SDL_KEYDOWN)
+		if (event.type == SDL_KEYDOWN || event.type == SDL_JOYBUTTONDOWN)
 		{
 			//Set last key press to current ticks
 			this->lastKeyPressed = SDL_GetTicks();
