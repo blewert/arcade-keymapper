@@ -8,8 +8,7 @@
 #include <windows.h>
 #include "SDL.h"
 
-//Project-level includes
+//Project-level includes, include util functions first
+#include "utilfuncs.h"
 #include "mapper.h"
 
-//Define debug stuff
-const bool KEYMAPPER_DEBUG_STATUS = true;

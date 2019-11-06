@@ -50,6 +50,9 @@
     <ClInclude Include="axismapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="utilfuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

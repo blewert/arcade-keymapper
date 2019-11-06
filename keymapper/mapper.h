@@ -71,8 +71,9 @@ namespace keymapper
 		int lastKeyPressed = 0;
 		int warningTicks = 1000 * 5;
 		int timeoutTicks = 1000 * 30;
-
 		bool waitingForUserStart = true;
+
+		const int MAPPER_WAIT_START_PROCESS_TIME = 1;
 
 		std::string chromePath  = "";
 		std::string chromeFlags = "";

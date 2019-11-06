@@ -9,6 +9,8 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 
+
+
 namespace keymapper
 {
 	class Mapper;

@@ -4,8 +4,9 @@
 #include <vector>
 
 #include "SDL.h"
-
 #include "keyutil.h"
+
+int printd(const char* format, ...);
 
 class AxisMapper
 {

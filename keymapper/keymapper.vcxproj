@@ -160,6 +160,7 @@
     <ClInclude Include="keyutil.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="mapper.h" />
+    <ClInclude Include="utilfuncs.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>

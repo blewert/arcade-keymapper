@@ -90,7 +90,7 @@ void keymapper::Mapper::RestartChrome(void) const
 	this->CloseProcess(L"chrome.exe");
 
 	//Sleep for a second
-	Sleep(1 * 1000);
+	Sleep(MAPPER_WAIT_START_PROCESS_TIME * 1000);
 
 	//Start chrome
 	this->StartProcess(this->chromePath, this->chromeFlags);
@@ -131,8 +131,6 @@ void keymapper::Mapper::EnumerateJoypads(Window* window)
 	//Get the number of joypads open
 	int joypadTotalCount = SDL_NumJoysticks();
 	int joypadCount = 0;
-
-	std::cout << joypadTotalCount << " joypads available" << std::endl;
 
 	//Render the splash screen, draw some initial text
 	window->RenderSplashScreen("assets/img/start-menu.png");
@@ -223,7 +221,7 @@ void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)
 			window->Close();
 
 		//Key pressed? Update key time
-		if (event.type == SDL_KEYDOWN || event.type == SDL_JOYBUTTONDOWN)
+		if (event.type == SDL_KEYDOWN || event.type == SDL_JOYBUTTONDOWN || event.type == SDL_JOYAXISMOTION)
 		{
 			//Set last key press to current ticks
 			this->lastKeyPressed = SDL_GetTicks();
@@ -277,8 +275,6 @@ void keymapper::Mapper::MapJoyInputDown(SDL_Event event)
 
 	//Press that key
 	KeyUtil::SendKeyDown(mappedKey);
-
-	//printf("joypad id %d, mapped to %d | button %d, key press %c\n", event.jbutton.which, mappedJoypadIndex, button, mappedKey);
 }
 
 void keymapper::Mapper::MapJoyInputUp(SDL_Event event)

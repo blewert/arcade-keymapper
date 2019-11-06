@@ -46,7 +46,7 @@ void AxisMapper::Map(SDL_Event& event)
 	//If vkCode is 0, the axes has been reset to the centre.. we need to release last key
 	if (vkCode)
 	{
-		printf("[KEYDN] %2c, %3d, %3d, %3d\n", vkCode, vkCode, 0, value);
+		printd("[KEYDN] %2c, %3d, %3d, %3d\n", vkCode, vkCode, 0, value);
 		KeyUtil::SendKeyDown(vkCode);
 	}
 

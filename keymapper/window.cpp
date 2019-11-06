@@ -117,7 +117,7 @@ void keymapper::Window::RenderWarning(float diff) const
 	//Render the background
 	SDL_RenderCopy(this->renderer, this->warningImage, NULL, NULL);
 
-	//Build the string
+	//Build the string with sprintf because i no likey setprecision
 	char buildString[16];
 	sprintf_s(buildString, "%.1f", diff);
 
