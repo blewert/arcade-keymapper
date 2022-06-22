@@ -102,6 +102,37 @@ void keymapper::Window::RenderPresent(void) const
 	SDL_RenderPresent(this->renderer);
 }
 
+void keymapper::Window::RenderError(std::string str) const
+{
+	//Get the window flags
+	auto windowFlags = SDL_GetWindowFlags(this->window);
+
+	//Is the window hidden? Show it!
+	if (windowFlags & SDL_WINDOW_HIDDEN)
+	{
+		SDL_ShowWindow(this->window);
+		SDL_RaiseWindow(this->window);
+	}
+
+	//Render the background
+	SDL_RenderCopy(this->renderer, this->warningImage, NULL, NULL);
+
+	//-----------------
+
+	//Where to render it
+	int x = DEFAULT_WINDOW_WIDTH / 2,
+		y = DEFAULT_WINDOW_HEIGHT / 2;
+
+	//Refreshing page text
+	this->RenderText("ERROR:", x, y - 50, ALIGN_CENTRE);
+
+	//Render the countdown text
+	this->RenderText(str, x, y, ALIGN_CENTRE, 0xff0000);
+
+	//Present it!
+	SDL_RenderPresent(this->renderer);
+}
+
 void keymapper::Window::RenderWarning(float diff) const
 {
 	//Get the window flags

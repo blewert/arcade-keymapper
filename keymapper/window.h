@@ -31,6 +31,7 @@ namespace keymapper
 
 		void Hide(void);
 		void RenderPresent(void) const;
+		void RenderError(std::string str) const;
 		void RenderClear(void) const;
 		void RenderText(const std::string& text, int x, int y, int align = ALIGN_LEFT, int color = 0xffffff) const;
 		void LoadWarningImage(const char* path);

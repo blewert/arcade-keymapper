@@ -120,7 +120,7 @@ void keymapper::Mapper::RefreshChrome(void) const
 
 }
 
-void keymapper::Mapper::EnumerateJoypads(Window* window)
+bool keymapper::Mapper::EnumerateJoypads(Window* window)
 {
 	//Check if any joypad input is pressed
 	//..
@@ -131,6 +131,13 @@ void keymapper::Mapper::EnumerateJoypads(Window* window)
 	//Get the number of joypads open
 	int joypadTotalCount = SDL_NumJoysticks();
 	int joypadCount = 0;
+
+	if (joypadTotalCount == 0)
+	{
+		window->RenderError("No joypads detected.");
+		return false;
+	}
+		
 
 	//Render the splash screen, draw some initial text
 	window->RenderSplashScreen("assets/img/start-menu.png");
@@ -174,6 +181,8 @@ void keymapper::Mapper::EnumerateJoypads(Window* window)
 
 	//Set flag to false
 	this->waitingForVirtualEnumeration = false;
+
+	return true;
 }
 
 void __fastcall keymapper::Mapper::OnThreadIteration(keymapper::Window* window)

@@ -50,7 +50,7 @@ namespace keymapper
 		void CloseProcess(const wchar_t* name) const;
 		void RefreshChrome(void) const;
 		void RestartChrome(void) const;
-		void EnumerateJoypads(Window* window);
+		bool EnumerateJoypads(Window* window);
 
 		void MapJoyInputDown(SDL_Event event);
 		void MapJoyInputUp(SDL_Event event);
